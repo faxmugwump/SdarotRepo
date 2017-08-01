@@ -3,7 +3,7 @@
 """
 	Plugin for streaming video content from www.sdarot.co.in
 """
-import urllib, urllib2, re, os, sys 
+import urllib, urllib2, re, os, sys, base64
 import xbmcaddon, xbmc, xbmcplugin, xbmcgui
 import HTMLParser
 import json
@@ -26,7 +26,7 @@ fanart = xbmc.translatePath(os.path.join( __PLUGIN_PATH__,"fanart.jpg"))
 
 dbg = False # used for simple downloader logging
 
-DOMAIN='https://www.sdarot.live'
+DOMAIN=base64.b64decode('aHR0cHM6Ly93d3cuc2Rhcm90LmxpdmU=')
 #DOMAIN = __settings__.getSetting("domain")
 
 #print "Sdarot Domain=" + DOMAIN
@@ -87,9 +87,9 @@ def SearchSdarot(url,search_entered):
 		
 def INDEX_AZ(url,page):
 	if page == 'no':
-		page = 'https://www.sdarot.pm/ajax/series?loadMore=9999&start=1&search%5Bfrom%5D=&search%5Bto%5D=&search%5Border%5D=&search%5Bdir%5D='
+		page = DOMAIN + '/ajax/series?loadMore=9999&start=1&search%5Bfrom%5D=&search%5Bto%5D=&search%5Border%5D=&search%5Bdir%5D='
 	else:
-		page = 'https://www.sdarot.pm/ajax/series?loadMore=9999&start=1&search%5Bgenre%5D%5B%5D={0}&search%5Bfrom%5D=&search%5Bto%5D=&search%5Border%5D=&search%5Bdir%5D='.format(page)
+		page = DOMAIN + '/ajax/series?loadMore=9999&start=1&search%5Bgenre%5D%5B%5D={0}&search%5Bfrom%5D=&search%5Bto%5D=&search%5Border%5D=&search%5Bdir%5D='.format(page)
 	page = getData(page)
 	matches = re.compile('<img.*?src="(.*?)".*?<h4>(.*?)</h4>.*?<h5>(.*?)</h5>.*?href="(.*?)"', re.S).findall(page)
 	sr_arr = []

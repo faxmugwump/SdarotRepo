@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="repository.sdarot" name="[COLOR white][B]Sdarot[/B][/COLOR] [COLOR white][B]Repo[/B][/COLOR]" version="1.0.0" provider-name="Sdarot">
+<addon id="repository.sdarot" name="[COLOR white][B]Sdarot[/B][/COLOR] [COLOR white][B]Repo[/B][/COLOR]" version="1.0.1" provider-name="Sdarot">
         <extension point="xbmc.addon.repository" name="Sdarot Repository">
                 <info compressed="false">http://raw.github.com/Sdarot/SdarotRepo/master/addons.xml</info>
                 <checksum>http://raw.github.com/Sdarot/SdarotRepo/master/addons.xml.md5</checksum>
@@ -14,7 +14,7 @@
         </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.Tv" version="2.4.6" provider-name="cubicle,Sdarot">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.Tv" version="2.4.7" provider-name="cubicle,Sdarot">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
 		<import addon="repository.sdarot" />

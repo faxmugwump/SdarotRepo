@@ -7,10 +7,9 @@ Created on 30/04/2011
 '''
 __USERAGENT__ = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
 #__USERAGENT__ = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/6.0)'
-DOMAIN='https://www.sdarot.live'
 
 
-import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time, socket
+import urllib,urllib2,re,xbmc,xbmcplugin,xbmcgui,xbmcaddon,os,sys,time, socket,base64
 import StringIO
 import gzip
 import json
@@ -26,6 +25,7 @@ __DEBUG__ = __settings__.getSetting("DEBUG") == "true"
 #__DEBUG__ = False
 
 #DOMAIN = __settings__.getSetting("domain")
+DOMAIN=base64.b64decode('aHR0cHM6Ly93d3cuc2Rhcm90LmxpdmU=')
 HOST = DOMAIN[8:]
 #PROXY_PORT = 9899
 
