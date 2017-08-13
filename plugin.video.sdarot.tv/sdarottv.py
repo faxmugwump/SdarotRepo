@@ -70,8 +70,7 @@ def SearchSdarot(url,search_entered):
 	keyboard.doModal()
 	if keyboard.isConfirmed():
 		search_entered = keyboard.getText()
-	page = getData(url=url,timeout=0,postData="term=" + search_entered)
-	
+	page = getData(url+'?term='+urllib.quote(search_entered))
 	matches = re.compile('href="/watch/(\d+)-(.*?)">').findall(page)
 
 	#needs to remove duplicted result (originaly in site
