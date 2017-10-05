@@ -14,7 +14,7 @@
         </extension>
 </addon>
 
-<addon id="plugin.video.sdarot.tv" name="Sdarot.Tv" version="2.4.8" provider-name="cubicle,Sdarot">
+<addon id="plugin.video.sdarot.tv" name="Sdarot.Tv" version="2.4.9" provider-name="cubicle,Sdarot">
     <requires>
         <import addon="xbmc.python" version="2.1.0"/>
 		<import addon="repository.sdarot" />

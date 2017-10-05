@@ -309,7 +309,12 @@ def getFinalVideoUrl(series_id,season_id,episode_id,referer,silent=False,m_quali
 	if __settings__.getSetting("use_proxy") == "true":
 		finalUrl = "http://127.0.0.1:{0}/?url={1}".format(PROXY_PORT, urllib.quote(finalUrl))
 
-	return "{0}|Referer={1}&User-Agent={2}".format(finalUrl, urllib.quote(referer), __USERAGENT__), VID
+	cookie = ''
+	for cook in sys.modules["__main__"].cookiejar:
+		if cook.name == 'Sdarot':
+			cookie = cook.value
+			break
+	return "{0}|Referer={1}&User-Agent={2}&Cookie=Sdarot={3}".format(finalUrl, urllib.quote(referer), __USERAGENT__, cookie), VID
 	#return finalUrl, VID
 
 def getImage(imageURL, siteName):
