@@ -30,7 +30,6 @@ POSTER_PREFIX = base64.decodestring('aHR0cHM6Ly9zdGF0aWMuc2Rhcm90LmxpdmUvc2VyaWV
 
 @plugin.route('/')
 def main_menu():
-    plugin.set_setting('current_page', 'main')
     items = [
         {
             'label': folder['label'],
@@ -88,7 +87,7 @@ def main_menu():
 @plugin.route('/genre/<_id>/<page>')
 def open_genre(_id, page):
     page = int(page)
-    req = requests.get(API + '/series/list/{}/page/{}/perPage/100'.format(_id, page)).json()
+    req = requests.get(API + '/series/list/{0}/page/{1}/perPage/100'.format(_id, page)).json()
 
     items = []
     for s in req['series']:
@@ -98,7 +97,7 @@ def open_genre(_id, page):
                                       fav=build_fav(label, path, s['id'], '0'), year=s['year']))
 
     if not req['pages']['page'] == req['pages']['totalPages']:
-        items.append(sdarot.make_item('[COLOR yellow]{}[/COLOR]'.format('הבא'),
+        items.append(sdarot.make_item('[COLOR yellow]{0}[/COLOR]'.format('הבא'),
                                       plugin.url_for('open_genre', _id=_id, page=page + 1), '', FANART, False))
 
     sdarot.set_dir(items, 504, 'tvshows', plugin)
@@ -107,7 +106,7 @@ def open_genre(_id, page):
 
 @plugin.route('/series/<sid>/<title>')
 def open_series(sid, title):
-    req = requests.get(API + '/series/info/{}'.format(sid), headers=HEADERS).json()
+    req = requests.get(API + '/series/info/{0}'.format(sid), headers=HEADERS).json()
     serie = req['serie']
 
     episodes = serie['episodes']
@@ -116,8 +115,8 @@ def open_series(sid, title):
 
     items = []
     for season in sorted(episodes.keys(), key=int):
-        label = u'עונה {}'.format(season)
-        path = plugin.url_for('open_season', sid=sid, se=season, title=title, title_eng=serie['eng'])
+        label = u'עונה {0}'.format(season)
+        path = plugin.url_for('open_season', sid=sid, se=season, title=title, title_eng=serie['eng'].encode('utf8'))
         items.append(sdarot.make_item(label, path, serie['description'], POSTER_PREFIX + sid + '.jpg', False,
                                       fav=build_fav(label, path, sid, '0'), genres=req['genres']))
 
@@ -128,14 +127,14 @@ def open_series(sid, title):
 @plugin.route('/season/<sid>/<se>/<title>/<title_eng>')
 def open_season(sid, se, title, title_eng):
     cookie = sdarot.get_user_cookie()
-    req = requests.get(API + '/series/info/{}'.format(sid), cookies=cookie, headers=HEADERS).json()['serie']
+    req = requests.get(API + '/series/info/{0}'.format(sid), cookies=cookie, headers=HEADERS).json()['serie']
 
     updated_list = plugin.get_storage('updated_list')
     sync_sdarot_vids = plugin.get_storage('sync').get('vids')
     episodes = req['episodes'][str(se)]
     items = []
     for episode in episodes or []:
-        label = u'פרק {}'.format(episode['episode'])
+        label = u'פרק {0}'.format(episode['episode'])
         plot = episode['description'].encode('utf-8') or 'לא זמין'
         path = plugin.url_for('watch', sid=sid, season=se, episode=episode['episode'],
                               title=title, vid='None')
@@ -145,10 +144,10 @@ def open_season(sid, se, title, title_eng):
                                 updated_list=updated_list, is_user=cookie != {},
                                 sync_storage=sync_sdarot_vids)
         item['context_menu'].extend([
-            ('בחירת איכות', 'XBMC.Container.Update({})'.format
+            ('בחירת איכות', 'XBMC.Container.Update({0})'.format
                 (plugin.url_for('choose_quality', sid=sid, season=se, episode=episode['episode'],
                                 title=title, title_eng=title_eng, plot=plot))),
-            ('הורד פרק', 'XBMC.Container.Update({})'.format
+            ('הורד פרק', 'XBMC.Container.Update({0})'.format
                 (plugin.url_for('download_vid', sid=sid, season=se, ep=episode['episode'],
                                 title=title_eng, quality='None')))])
         items.append(item)
@@ -163,13 +162,13 @@ def choose_quality(sid, season, episode, title, title_eng, plot):
 
     items = []
     for q in qualities.keys():
-        label = '{}, עונה {}, פרק {}, ({}p)'.format(title, season, episode, q)
+        label = '{0}, עונה {1}, פרק {2}, ({3}p)'.format(title, season, episode, q)
         path = plugin.url_for('watch', sid=sid, season=season, episode=episode, title=title,
                               vid=sdarot.build_final_url(qualities[q], cookie))
 
         item = sdarot.make_item(label, path, plot, POSTER_PREFIX + sid + '.jpg', True,
                                 sid=sid, episode=episode, season=season, fav='')
-        item['context_menu'].extend([('הורד פרק', 'XBMC.Container.Update({})'.format(
+        item['context_menu'].extend([('הורד פרק', 'XBMC.Container.Update({0})'.format(
             plugin.url_for('download_vid', sid=sid, season=season, ep=episode, title=title_eng, quality=q)))])
         items.append(item)
 
@@ -184,7 +183,7 @@ def watch(sid, season, episode, title, vid):
 
     if vid:
         item = ListItem(**{
-            'label': u'פרק {}'.format(episode),
+            'label': u'פרק {0}'.format(episode),
             'path': vid,
             'thumbnail': POSTER_PREFIX + sid + '.jpg'
         })
@@ -194,7 +193,7 @@ def watch(sid, season, episode, title, vid):
         item.set_property('type', 'movie')
         item.set_info('Video', {
                 'Title': title,
-                'Genre': u'פרק {}, עונה {}'.format(episode, season)
+                'Genre': u'פרק {0}, עונה {1}'.format(episode, season)
             })
 
         plugin.set_resolved_url(item)
@@ -205,7 +204,7 @@ def watch(sid, season, episode, title, vid):
 @plugin.route('/index/<lang>/<page>')
 def index(lang, page):
     page = int(page)
-    req = requests.get(API + '/series/list/page/{}/perPage/100/orderBy/{}'.format(page, lang)).json()
+    req = requests.get(API + '/series/list/page/{0}/perPage/100/orderBy/{1}'.format(page, lang)).json()
     items = []
 
     for s in req['series']:
@@ -213,7 +212,7 @@ def index(lang, page):
         path = plugin.url_for('open_series', sid=s['id'], title=s[lang].encode('utf8'))
         items.append(sdarot.make_item(label, path, s['description'], POSTER_PREFIX + s['poster'], False,
                                       fav=build_fav(label, path, s['id'], False),
-                                      year=s['year'], genres=s['genres'].encode('utf8')))
+                                      year=s['year'], genres=s['genres'].encode('utf8') if s.get('genres') else ''))
 
     buttons = {
         'heb': ['הבא', 'הקודם', 'חזרה לדף הראשי', 'עמוד'],
@@ -222,17 +221,17 @@ def index(lang, page):
 
     if not req['pages']['page'] == req['pages']['totalPages']:
 
-        label = '[COLOR yellow]{}[/COLOR]'.format(buttons[lang][0])
+        label = '[COLOR yellow]{0}[/COLOR]'.format(buttons[lang][0])
         path = plugin.url_for('index', lang=lang, page=page + 1)
         item = sdarot.make_item(label, path, '', FANART, False)
         items.append(item)
 
-        label = '[COLOR yellow]{}[/COLOR]'.format(buttons[lang][2])
+        label = '[COLOR yellow]{0}[/COLOR]'.format(buttons[lang][2])
         path = plugin.url_for('main_menu')
         item = sdarot.make_item(label, path, '', FANART, False)
         items.append(item)
 
-        label = '[COLOR yellow]------- {} -------[/COLOR]'.format(buttons[lang][3] + ' ' + str(page + 1))
+        label = '[COLOR yellow]------- {0} -------[/COLOR]'.format(buttons[lang][3] + ' ' + str(page + 1))
         path = plugin.url_for('empty')
         item = sdarot.make_item(label, path, '', FANART, False)
         items.insert(0, item)
@@ -270,14 +269,14 @@ def search(page):
             s = requests.Session()
             req = requests.Request(method='GET', url=API, headers=HEADERS)
             prep = req.prepare()
-            prep.url = API + '/series/search/{}/page/{}/perPage/100'.format(search_input, page)
+            prep.url = API + '/series/search/{0}/page/{1}/perPage/100'.format(search_input, page)
             req = s.send(prep)
 
             results = req.json()['series']
             if results:
                 items = []
                 for s in results:
-                    label = u'{}-{}'.format(s['heb'], s['eng'])
+                    label = u'{0}-{1}'.format(s['heb'], s['eng'])
                     path = plugin.url_for('open_series', sid=s['id'], title=s['heb'].encode('utf8'))
                     items.append(sdarot.make_item(label, path, s['description'], POSTER_PREFIX + s['poster'], False,
                                                   fav=build_fav(label, path, s['id'], '0'), year=s['year']))
@@ -297,8 +296,8 @@ def tracking_list():
         req = requests.get(API + '/tracking/list', cookies=cookie, headers=HEADERS)
         items = [
             {
-                'label': u'{}-{}-{}'.format(s['heb'], s['eng'], u'צפית ב {} מתוך {} פרקים'.format(s['watched'],
-                                                                                                  s['total'])),
+                'label': u'{0}-{1}-{2}'.format(s['heb'], s['eng'], u'צפית ב {0} מתוך {1} פרקים'.format(s['watched'],
+                                                                                                       s['total'])),
                 'path': plugin.url_for('open_series', sid=s['serieID'], title=s['heb'].encode('utf8')),
                 'icon': POSTER_PREFIX + s['poster'],
                 'thumbnail': POSTER_PREFIX + s['poster'],
@@ -306,9 +305,9 @@ def tracking_list():
                     'Fanart_Image': FANART
                 },
                 'context_menu': [('הסרה ממעקב',
-                                  'XBMC.Container.Update({})'.format(plugin.url_for('delete_tracking',
-                                                                                    sid=s['serieID'],
-                                                                                    cookie=cookie['Sdarot'])))]
+                                  'XBMC.Container.Update({0})'.format(plugin.url_for('delete_tracking',
+                                                                                     sid=s['serieID'],
+                                                                                     cookie=cookie['Sdarot'])))]
             } for s in req.json()['list']
         ]
 
@@ -320,7 +319,7 @@ def tracking_list():
 
 @plugin.route('/delete_tracking/<sid>/<cookie>')
 def delete_tracking(sid, cookie):
-    req = requests.get(API + '/tracking/delete/sid/{}'.format(sid), cookies={'Sdarot': cookie}, headers=HEADERS)
+    req = requests.get(API + '/tracking/delete/sid/{0}'.format(sid), cookies={'Sdarot': cookie}, headers=HEADERS)
     if req.json()['success']:
         xbmc.executebuiltin('Container.Refresh')
         plugin.notify('סדרה הוסרה!')
@@ -352,7 +351,7 @@ def favourites():
                 'Fanart_Image': FANART
             },
             'context_menu': [(
-                'הסר ממועדפים סדרות', 'XBMC.Container.Update({})'.format(plugin.url_for('remove_fav', _id=f))
+                'הסר ממועדפים סדרות', 'XBMC.Container.Update({0})'.format(plugin.url_for('remove_fav', _id=f))
             )]
         } for f in favs.keys()
     ]
@@ -371,7 +370,7 @@ def add_fav(label, path, sid, is_playable):
         'poster': POSTER_PREFIX + sid + '.jpg',
         'is_playable': is_playable
         }
-    plugin.notify('{} נוסף למועדפים!'.format(label), image=ICON)
+    plugin.notify('{0} נוסף למועדפים!'.format(label), image=ICON)
 
 
 @plugin.route('/remove_fav/<_id>')
@@ -427,7 +426,7 @@ def download_vid(sid, season, ep, title, quality):
         url = qualities[quality]
     if url and cookie:
         def download():
-            with open(dp + '{}.S{}.E{}_{}.mp4'.format(title, season, ep, quality + 'P'), 'wb') as f:
+            with open(dp + '{0}.S{1}.E{2}_{3}.mp4'.format(title, season, ep, quality + 'P'), 'wb') as f:
                 download_headers = {  # Required for download speed
                     'Accept-Encoding': 'gzip, deflate, br',
                     'Cache-Control': 'no-cache',
@@ -453,7 +452,7 @@ def download_vid(sid, season, ep, title, quality):
                 dialog.close()
                 req.close()
 
-            plugin.notify('{} עונה {} פרק {} ירד בהצלחה!'.format(title, season, ep), delay=8000, image=ICON)
+            plugin.notify('{0} עונה {1} פרק {2} ירד בהצלחה!'.format(title, season, ep), delay=8000, image=ICON)
             return True
 
         thr = threading.Thread(target=download)

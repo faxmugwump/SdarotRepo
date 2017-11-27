@@ -1,3 +1,8 @@
+[B]Version 2.5.1[/B]
+- Fixed python compatibility problems.
+- Fixed special characters in series titles problem.
+- Fixed scrolling pages problem on the indexes.
+- Addon can now run on Android platforms with older versions of kodi.
 [B]Version 2.5.0[/B]
 - Addon have been rewritten entirely to fetch content from the API and not from the website.
 - Users can now sync their watched list from and to kodi (from server - automatically, from kodi - through the settings window).
