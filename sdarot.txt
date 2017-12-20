@@ -1,0 +1,13 @@
+#list name
+list name=[B][COLOR white]Sdarot.Tv Maintenance[/COLOR][/B]
+#unknownsources
+unknownsources=true
+#icon/fanart
+icon=https://raw.githubusercontent.com/Sdarot/SdarotRepo/master/plugin.video.sdarot.tv/icon.png
+fanart=https://raw.githubusercontent.com/Sdarot/SdarotRepo/master/plugin.video.sdarot.tv/fanart.jpg
+#addons
+$[B][COLOR blue]===הרחבת Sdrot.Tv===[/COLOR][/B]$
+https://github.com/Sdarot/SdarotRepo/raw/master/zip/plugin.video.sdarot.tv/plugin.video.sdarot.tv-2.5.1.zip$plugin.video.sdarot.tv$plugin.video.sdarot.tv
+$[B][COLOR blue]===תלויות להרחבה===[/COLOR][/B]$
+https://github.com/Sdarot/SdarotRepo/raw/master/zip/script.module.requests/script.module.requests-2.9.1.zip$script.module.requests$script.module.requests
+https://github.com/Sdarot/SdarotRepo/raw/master/zip/script.module.xbmcswift2/script.module.xbmcswift2-2.4.0.zip$script.module.xbmcswift2$script.module.xbmcswift2
