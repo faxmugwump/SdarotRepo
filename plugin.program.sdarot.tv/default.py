@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import xbmcaddon,os,xbmc,xbmcgui,urllib,urllib2,re,xbmcplugin,sys
-import traceback
+import xbmcaddon,os,xbmc,xbmcgui,urllib,urllib2,xbmcplugin,sys
 import logging,shutil
-import HTMLParser,time
-from shutil import copyfile
+import time
 
 AddonID='plugin.program.sdarot.tv'
 Addon=xbmcaddon.Addon(id=AddonID)
@@ -126,9 +124,11 @@ def add_addon_list(url):
          swapUS(setting.rstrip('\r\n'))
        if '$' in file and file[0]!="#":
         file_name=file.split("$")
-        file_name[2]=file_name[2].replace('%24','$')
-        if os.path.exists(os.path.join(addonsDir, file_name[2].rstrip('\r\n'))):
-           file_name[1]='[COLOR white]'+file_name[1]+'[/COLOR]'
+        if file_name[0] == '':
+         addDir2(file_name[1],file,99,addonIcon,addonFanart,'')
+         continue
+        if os.path.exists(os.path.join(addonsDir, file_name[2].replace('%24','$').rstrip('\r\n'))):
+           file_name[1]='[COLOR white]'+file_name[1]+' - פעיל[/COLOR]'
         else:
           file_name[1]='[COLOR red]'+file_name[1]+' - לא פעיל[/COLOR]'
         addDir2(file_name[1],file,9,addonIcon,addonFanart,'')
@@ -151,28 +151,35 @@ def dis_or_enable_addon(addon_id, enable="true"):
             xbmc.log("### Disabled %s, response = %s" % (addon_id, response))
     return xbmc.executebuiltin('Container.Update(%s)' % xbmc.getInfoLabel('Container.FolderPath'))
 	
-def install_package(url,with_massage):
+def ins_rem_package(url,with_massage):
     extension=url.split("$")
-    if not os.path.exists(os.path.join(addonsDir, extension[2].rstrip('\r\n').replace('%24','$'))):
+    addon_id = extension[2].rstrip('\r\n').replace('%24','$')
+    if not os.path.exists(os.path.join(addonsDir, addon_id)):
       logging.warning(extension)
       downloader_is(extension[0],extension[1],with_massage)
-      dis_or_enable_addon(extension[2].rstrip('\r\n'))
+      dis_or_enable_addon(addon_id)
       time.sleep(10)
+      xbmc.executebuiltin("XBMC.UpdateLocalAddons()")
       if 'skin_change' in extension[1]:
        time.sleep(2)
-       xbmc.executebuiltin("XBMC.UpdateLocalAddons()")
-       time.sleep(2)
-       xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Settings.SetSettingValue","id":1,"params":{"setting":"lookandfeel.skin","value":"'+extension[2].rstrip('\r\n')+'"}}')
+       xbmc.executeJSONRPC('{"jsonrpc":"2.0","method":"Settings.SetSettingValue","id":1,"params":{"setting":"lookandfeel.skin","value":"'+addon_id+'"}}')
        xbmc.executebuiltin('SendClick(11)')
        phenomenalSettings = os.path.join(xbmc.translatePath('special://home'),'userdata','addon_data','skin.phenomenal','settings.xml')
-       if os.path.exists():
+       if os.path.exists(phenomenalSettings):
             file=open(phenomenalSettings,'r')
             skin_setting=file.read()
             skin_setting=skin_setting.replace('<setting id="Disable_Splash" type="bool">false</setting>','<setting id="Disable_Splash" type="bool">true</setting>')
             file=open(phenomenalSettings,'w')
             file.write(skin_setting)
             file.close()
-     
+    elif with_massage=='yes':
+      dialog = xbmcgui.Dialog()
+      choice=dialog.yesno('[B][COLOR white]Sdarot.Tv Maintenance[/COLOR][/B]','', "האם להסיר את ההרחבה?",name.replace(' - פעיל',''))
+      if    choice :
+	  shutil.rmtree(os.path.join(addonsDir, addon_id))
+      xbmc.executebuiltin("UpdateLocalAddons")
+      xbmc.executebuiltin('Container.Refresh')
+
 def downloader_is (url,name,with_massage ) :
  import downloader,extract   
  i1iIIII = xbmc . getInfoLabel ( "System.ProfileName" )
@@ -247,7 +254,7 @@ if mode==None or url==None or len(url)<1:
 elif mode==8:
         add_addon_list(url)
 elif mode==9:
-        install_package(url,'yes')
+        ins_rem_package(url,'yes')
 
 
 
