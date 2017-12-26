@@ -205,8 +205,8 @@ def downloader_is (url,name,with_massage ) :
   extract . all ( OOooO , II111iiii , iiiI11 )
   iiiI11 . update ( 0 , name , "מוריד" )
   iiiI11 . update ( 0 , name , "מחלץ את הזיפ נא המתן" )
-  xbmc . executebuiltin ( 'UpdateLocalAddons ' )
-  xbmc . executebuiltin ( "UpdateAddonRepos" )
+  xbmc.executebuiltin("UpdateLocalAddons")
+  xbmc.executebuiltin('Container.Refresh')
 
 params=get_params()
 
