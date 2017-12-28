@@ -149,7 +149,7 @@ def get_video_url(sid, season, episode, token, cookie, choose_quality):
 
 
 def build_final_url(url, cookie):
-    return 'https:' + url + '|Cookie=Sdarot={0}&User-Agent={1}'.format(cookie.get('Sdarot'), HEADERS.get('User-Agent'))
+    return 'https:' + url + '|Cookie=Sdarot={0}&User-Agent={1}'.format(urllib.quote(cookie.get('Sdarot'), safe=''), HEADERS.get('User-Agent'))
 
 
 def set_dir(items, mode, content, p):
