@@ -174,11 +174,12 @@ def ins_rem_package(url,with_massage):
             file.close()
     elif with_massage=='yes':
       dialog = xbmcgui.Dialog()
-      choice=dialog.yesno('[B][COLOR white]Sdarot.Tv Maintenance[/COLOR][/B]','', "האם להסיר את ההרחבה?",name.replace(' - פעיל',''))
-      if    choice :
-	  shutil.rmtree(os.path.join(addonsDir, addon_id))
-      xbmc.executebuiltin("UpdateLocalAddons")
-      xbmc.executebuiltin('Container.Refresh')
+      choice = dialog.yesno('[B][COLOR white]Sdarot.Tv Maintenance[/COLOR][/B]','', "האם להסיר את ההרחבה?",name.replace(' - פעיל',''))
+      if choice :
+        shutil.rmtree(os.path.join(addonsDir, addon_id))
+        xbmc.executebuiltin("UpdateLocalAddons")
+        xbmc.executebuiltin('Container.Refresh')
+        dialog.ok("Sdarot.Tv", "ההסרה בוצעה בהצלחה!", "נא לבצע הפעלה מחדש לקודי.")
 
 def downloader_is (url,name,with_massage ) :
  import downloader,extract   
@@ -207,7 +208,9 @@ def downloader_is (url,name,with_massage ) :
   iiiI11 . update ( 0 , name , "מחלץ את הזיפ נא המתן" )
   xbmc.executebuiltin("UpdateLocalAddons")
   xbmc.executebuiltin('Container.Refresh')
-
+  dialog = xbmcgui.Dialog()
+  dialog.ok("Sdarot.Tv", "ההתקנה בוצעה בהצלחה!")
+  
 params=get_params()
 
 url=None
