@@ -5,6 +5,9 @@ unknownsources=true
 #icon/fanart
 icon=https://raw.githubusercontent.com/Sdarot/SdarotRepo/master/plugin.video.sdarot.tv/icon.png
 fanart=https://raw.githubusercontent.com/Sdarot/SdarotRepo/master/plugin.video.sdarot.tv/fanart.jpg
+#repos
+$[COLOR ff00FFFF][B]===רפו Sdarot.Tv===[/COLOR][/B]$
+https://raw.githubusercontent.com/Sdarot/SdarotRepo/master/zip/repository.sdarot/repository.sdarot-1.0.2.zip$repository.sdarot$repository.sdarot
 #addons
 $[B][COLOR ff00FFFF]===הרחבת Sdarot.Tv===[/COLOR][/B]$
 https://raw.githubusercontent.com/Sdarot/SdarotRepo/master/zip/plugin.video.sdarot.tv/plugin.video.sdarot.tv-2.5.2.zip$plugin.video.sdarot.tv$plugin.video.sdarot.tv
