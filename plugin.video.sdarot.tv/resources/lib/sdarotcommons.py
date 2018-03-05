@@ -14,8 +14,8 @@ HEADERS = {
 }
 FANART = plugin.addon.getAddonInfo('fanart')
 ICON = plugin.addon.getAddonInfo('icon')
-API = base64.decodestring('aHR0cHM6Ly9hcGkuc2Rhcm90LmxpdmU=')
-POSTER_PREFIX = base64.decodestring('aHR0cHM6Ly9zdGF0aWMuc2Rhcm90LmxpdmUvc2VyaWVzLw==')
+API = base64.decodestring('aHR0cHM6Ly9hcGkuc2Rhcm90Lndvcmxk')
+POSTER_PREFIX = base64.decodestring('aHR0cHM6Ly9zdGF0aWMuc2Rhcm90LndvcmxkL3Nlcmllcy8=')
 
 
 def get_user_cookie():
