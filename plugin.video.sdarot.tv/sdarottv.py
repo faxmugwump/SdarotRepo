@@ -7,7 +7,7 @@ updated on 2/10/2017
 @author: Shai, updated by Roey
 """
 
-import requests, uuid, threading, base64, time
+import requests, uuid, threading, os
 import resources.lib.sdarotcommons as sdarot
 from xbmcswift2 import Plugin, xbmc, xbmcgui, ListItem
 
@@ -16,16 +16,11 @@ __author__ = "Shai & Roey"
 
 plugin = Plugin()
 
-__PLUGIN_VERSION__ = plugin.addon.getAddonInfo('version')
-
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                  ' (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 Sdarot/' + __PLUGIN_VERSION__
-}
+HEADERS = sdarot.HEADERS
 FANART = plugin.addon.getAddonInfo('fanart')
 ICON = plugin.addon.getAddonInfo('icon')
-API = base64.decodestring('aHR0cHM6Ly9hcGkuc2Rhcm90Lndvcmxk')
-POSTER_PREFIX = base64.decodestring('aHR0cHM6Ly9zdGF0aWMuc2Rhcm90LndvcmxkL3Nlcmllcy8=')
+API = sdarot.API
+POSTER_PREFIX = sdarot.POSTER_PREFIX
 
 
 @plugin.route('/')
@@ -236,7 +231,7 @@ def index(lang, page):
         item = sdarot.make_item(label, path, '', FANART, False)
         items.insert(0, item)
 
-    plugin.set_content('tvshows')
+    plugin.set_content('files')
     plugin.finish(items, view_mode=504)
 
     xbmc.executebuiltin('Control.setFocus(50, 0)')
@@ -310,7 +305,6 @@ def tracking_list():
                                                                                      cookie=cookie['Sdarot'])))]
             } for s in req.json()['list']
         ]
-
         sdarot.set_dir(items, 504, 'episodes', plugin)
         return []
     else:

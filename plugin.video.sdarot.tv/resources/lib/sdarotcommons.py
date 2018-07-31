@@ -1,21 +1,77 @@
 # -*- coding: utf-8 -*-
 
-import requests, time, os, re, sqlite3, urllib, base64
+import requests, time, os, re, sqlite3, urllib, urllib2, base64, urlparse, json, io
 from xbmcswift2 import Plugin, xbmc, xbmcgui
-
-
 plugin = Plugin()
+
+try:
+    from urllib3.util import connection
+except:
+    plugin.log.error("'script.module.urllib3' not installed.")
+    from requests.packages.urllib3.util import connection
+    plugin.log.error("try to use 'requests.packages.urllib3' instead.")
 
 __PLUGIN_VERSION__ = plugin.addon.getAddonInfo('version')
 
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                  ' (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 Sdarot/' + __PLUGIN_VERSION__
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36 Sdarot/' + __PLUGIN_VERSION__
 }
+
 FANART = plugin.addon.getAddonInfo('fanart')
 ICON = plugin.addon.getAddonInfo('icon')
-API = base64.decodestring('aHR0cHM6Ly9hcGkuc2Rhcm90Lndvcmxk')
-POSTER_PREFIX = base64.decodestring('aHR0cHM6Ly9zdGF0aWMuc2Rhcm90LndvcmxkL3Nlcmllcy8=')
+API = base64.decodestring('aHR0cHM6Ly9hcGkuc2Rhcm90LnR2')
+POSTER_PREFIX = base64.decodestring('aHR0cHM6Ly93d3cuZG9tYWluNGtvZGkubGlmZS9zZXJpZXMv')
+CACHE_FILE = os.path.join(xbmc.translatePath(plugin.addon.getAddonInfo('profile')).decode('utf-8'), 'cache.json')
+
+
+def get_ip(address):
+    handlers = [
+        urllib2.HTTPHandler(),
+        urllib2.HTTPSHandler()
+    ]
+    opener = urllib2.build_opener(*handlers)
+    req = urllib2.Request(base64.decodestring('aHR0cHM6Ly9kbnMuZ29vZ2xlLmNvbS9yZXNvbHZlP25hbWU9')+address)
+    req.add_header('User-Agent', 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36')
+    try:
+        response = opener.open(req,timeout=100)
+        data = response.read()
+        response.close()
+    except Exception as ex:
+        plugin.log.error(ex)
+        return None
+    data = json.loads(data)
+    return data['Answer'][0]['data']
+
+
+def cache_ip(address):
+    try:
+        if not os.path.isfile(CACHE_FILE):
+            a_list = {}
+        else:
+            with open(CACHE_FILE, 'r') as handle:
+                a_list = json.load(handle)
+        a_key = base64.encodestring(urlparse.urlparse(address).netloc)
+        if not a_list.get(a_key):
+            a_list[a_key] = {'a': 0, 'b': ''}
+        now = int(time.time())
+        if now - a_list[a_key]['a'] > 86400:
+            a_list[a_key]['b'] =  base64.encodestring(get_ip(base64.decodestring(a_key)))
+            a_list[a_key]['a'] =  now
+            with io.open(CACHE_FILE, 'w', encoding='utf-8') as handle:
+                handle.write(unicode(json.dumps(a_list, ensure_ascii=False)))
+        return base64.decodestring(a_list[a_key]['b'])
+    except Exception as ex:
+        plugin.log.error(ex)
+        return None
+
+
+_orig_create_connection = connection.create_connection
+
+def patched_create_connection(address, *args, **kwargs):
+    host, port = address
+    return _orig_create_connection((cache_ip(API), port), *args, **kwargs)
+
+connection.create_connection = patched_create_connection
 
 
 def get_user_cookie():
@@ -149,6 +205,9 @@ def get_video_url(sid, season, episode, token, cookie, choose_quality):
 
 
 def build_final_url(url, cookie):
+    base = urlparse.urlparse(url)
+    watch = cache_ip(url)
+    url = url.replace(base.netloc, watch)
     return 'https:' + url + '|Cookie=Sdarot={0}&User-Agent={1}'.format(urllib.quote(cookie.get('Sdarot'), safe=''), HEADERS.get('User-Agent'))
 
 
