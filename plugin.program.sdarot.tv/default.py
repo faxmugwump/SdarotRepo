@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import xbmcaddon,os,xbmc,xbmcgui,urllib,urllib2,xbmcplugin,sys
+import xbmcaddon,os,xbmc,xbmcgui,urllib,urllib2,xbmcplugin,sys,re
 import logging,shutil
 import time
 
@@ -119,6 +119,8 @@ def add_addon_list(url):
      f =read_txt_files(url)
      if f!='ERROR':
       for file in f:
+       if 'module.urllib3' in file and float(re.split(' |\-',xbmc.getInfoLabel('System.BuildVersion'))[0]) < 17:
+         continue
        if 'unknownsources' in file and file[0]!="#":
          setting=file.split('=')[1]
          swapUS(setting.rstrip('\r\n'))
