@@ -7,7 +7,7 @@ updated on 2/10/2017
 @author: Shai, updated by Roey
 """
 
-import requests, uuid, threading, os
+import requests, uuid, threading, os, urllib, urllib2
 import resources.lib.sdarotcommons as sdarot
 from xbmcswift2 import Plugin, xbmc, xbmcgui, ListItem
 
@@ -176,6 +176,7 @@ def watch(sid, season, episode, title, vid):
     if vid == 'None':  # Otherwise request was sent from choose_quality and url already exist
         vid, cookie = sdarot.get_final_video_and_cookie(sid, season, episode)
 
+    xbmc.log(vid, 5)
     if vid:
         item = ListItem(**{
             'label': u'פרק {0}'.format(episode),
@@ -415,10 +416,9 @@ def download_vid(sid, season, ep, title, quality):
         if q_index == -1:
             return
         quality = q_list[q_index]
-        url = qualities[quality]
-    else:
-        url = qualities[quality]
+    url = qualities[quality]
     if url and cookie:
+        url = sdarot.get_ip_url(url)
         def download():
             with open(dp + '{0}.S{1}.E{2}_{3}.mp4'.format(title, season, ep, quality + 'P'), 'wb') as f:
                 download_headers = {  # Required for download speed
@@ -426,9 +426,12 @@ def download_vid(sid, season, ep, title, quality):
                     'Cache-Control': 'no-cache',
                     'Connection': 'keep-alive',
                     'User-Agent': HEADERS['User-Agent']
+                    ,'Cookie': 'Sdarot={0}'.format(cookie.get('Sdarot'), safe='')
                 }
-                req = requests.get('https:' + url, stream=True, cookies=cookie, headers=download_headers)
-                total_size = req.headers.get('Content-Length')
+
+                request = urllib2.Request('http:' + url, headers=download_headers)
+                response = urllib2.urlopen(request)
+                total_size = response.info().get('Content-Length')
 
                 plugin.notify('ההורדה החלה', image=ICON)
 
@@ -437,14 +440,16 @@ def download_vid(sid, season, ep, title, quality):
                 dialog.update(1)
                 dl = 0
 
-                for chunk in req.iter_content(1024 * 30):
-                    if chunk:
-                        dl += len(chunk)
-                        dialog.update(100 * dl / int(total_size))
-                        f.write(chunk)
+                while True:
+                    chunk = response.read(1024 * 30)
+                    if not chunk:
+                        break
+                    dl += len(chunk)
+                    dialog.update(100 * dl / int(total_size))
+                    f.write(chunk)
 
                 dialog.close()
-                req.close()
+                response.close()
 
             plugin.notify('{0} עונה {1} פרק {2} ירד בהצלחה!'.format(title, season, ep), delay=8000, image=ICON)
             return True
@@ -461,4 +466,9 @@ if __name__ == '__main__':
     try:
         plugin.run()
     except:
-        pass
+        import sys, traceback
+        ex_type, ex, tb = sys.exc_info()
+        plugin.log.error(ex_type)
+        plugin.log.error(ex)
+        traceback.print_tb(tb)
+        del tb

@@ -204,11 +204,13 @@ def get_video_url(sid, season, episode, token, cookie, choose_quality):
             return build_final_url(qualities[quality], cookie)
 
 
-def build_final_url(url, cookie):
+def get_ip_url(url):
     base = urlparse.urlparse(url)
     watch = cache_ip(url)
-    url = url.replace(base.netloc, watch)
-    return 'https:' + url + '|Cookie=Sdarot={0}&User-Agent={1}'.format(urllib.quote(cookie.get('Sdarot'), safe=''), HEADERS.get('User-Agent'))
+    return url.replace(base.netloc, watch)
+
+def build_final_url(url, cookie):
+    return 'http:{0}|Cookie=Sdarot={1}&User-Agent={2}'.format(get_ip_url(url), urllib.quote(cookie.get('Sdarot'), safe=''), HEADERS.get('User-Agent'))
 
 
 def set_dir(items, mode, content, p):
