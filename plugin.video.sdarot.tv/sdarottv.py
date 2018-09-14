@@ -88,7 +88,8 @@ def open_genre(_id, page):
     for s in req['series']:
         label = s['heb']
         path = plugin.url_for('open_series', sid=s['id'], title=s['heb'].encode('utf8'))
-        items.append(sdarot.make_item(label, path, s['description'], POSTER_PREFIX + s['poster'], False,
+	desc = s['description'].replace('<br />', '\n')
+        items.append(sdarot.make_item(label, path, desc, POSTER_PREFIX + s['poster'], False,
                                       fav=build_fav(label, path, s['id'], '0'), year=s['year']))
 
     if not req['pages']['page'] == req['pages']['totalPages']:
@@ -112,7 +113,8 @@ def open_series(sid, title):
     for season in sorted(episodes.keys(), key=int):
         label = u'עונה {0}'.format(season)
         path = plugin.url_for('open_season', sid=sid, se=season, title=title, title_eng=serie['eng'].encode('utf8'))
-        items.append(sdarot.make_item(label, path, serie['description'], POSTER_PREFIX + sid + '.jpg', False,
+	desc = serie['description'].replace('<br />', '\n')
+        items.append(sdarot.make_item(label, path, desc, POSTER_PREFIX + sid + '.jpg', False,
                                       fav=build_fav(label, path, sid, '0'), genres=req['genres']))
 
     sdarot.set_dir(items, 504, 'episodes', plugin)
@@ -206,7 +208,8 @@ def index(lang, page):
     for s in req['series']:
         label = s[lang]
         path = plugin.url_for('open_series', sid=s['id'], title=s[lang].encode('utf8'))
-        items.append(sdarot.make_item(label, path, s['description'], POSTER_PREFIX + s['poster'], False,
+        desc = s['description'].replace('<br />', '\n')
+        items.append(sdarot.make_item(label, path, desc, POSTER_PREFIX + s['poster'], False,
                                       fav=build_fav(label, path, s['id'], False),
                                       year=s['year'], genres=s['genres'].encode('utf8') if s.get('genres') else ''))
 
@@ -274,7 +277,8 @@ def search(page):
                 for s in results:
                     label = u'{0}-{1}'.format(s['heb'], s['eng'])
                     path = plugin.url_for('open_series', sid=s['id'], title=s['heb'].encode('utf8'))
-                    items.append(sdarot.make_item(label, path, s['description'], POSTER_PREFIX + s['poster'], False,
+                    desc = s['description'].replace('<br />', '\n')
+                    items.append(sdarot.make_item(label, path, desc, POSTER_PREFIX + s['poster'], False,
                                                   fav=build_fav(label, path, s['id'], '0'), year=s['year']))
 
                 sdarot.set_dir(items, 504, 'files', plugin)
@@ -393,7 +397,6 @@ def sync_sdarot():
         xbmc.executebuiltin('Container.Refresh')
     else:
         plugin.notify('הייתה בעיה עם הסנכרון, נסה שוב..', image=ICON)
-    pass
 
 
 @plugin.route('/download/<sid>/<season>/<ep>/<title>/<quality>')
